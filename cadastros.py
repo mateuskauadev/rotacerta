@@ -33,3 +33,12 @@ def registrar_chegada(entrega_id, data_entrega):
     with conectar() as conn:
         conn.execute("UPDATE entregas SET data_entrega = ? WHERE id = ?", (data_entrega, entrega_id))
 
+def listar_entregas_detalhado():
+    with conectar() as conn:
+        return pd.read_sql("""
+            SELECT e.id, c.nome AS cliente, k.placa AS caminhao,
+                   e.peso_kg, e.data_saida, e.prazo, e.data_entrega
+            FROM entregas e
+            JOIN clientes c ON e.cliente_id = c.id
+            JOIN caminhoes k ON e.caminhao_id = k.id
+        """, conn)
