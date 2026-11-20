@@ -47,11 +47,11 @@ entregas["status"] = entregas.apply(definir_status, axis=1)
 # ---------- Filtros (menu lateral) ----------
 
 st.sidebar.header("Filtros")
-filtro_status = st.sidebar.multiselect("Status", sorted(entregas["status"].unique()))
-filtro_cliente = st.sidebar.multiselect("Cliente", sorted(entregas["cliente"].unique()))
-filtro_caminhao = st.sidebar.multiselect("Caminhão", sorted(entregas["caminhao"].unique()))
-
+filtro_status = st.sidebar.multiselect("Status", sorted(entregas["status"].unique()), placeholder="Todos")
+filtro_cliente = st.sidebar.multiselect("Cliente", sorted(entregas["cliente"].unique()), placeholder="Todos")
+filtro_caminhao = st.sidebar.multiselect("Caminhão", sorted(entregas["caminhao"].unique()), placeholder="Todos")
 filtradas = entregas
+
 if filtro_status:
     filtradas = filtradas[filtradas["status"].isin(filtro_status)]
 if filtro_cliente:
