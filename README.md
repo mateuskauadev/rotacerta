@@ -4,7 +4,7 @@ Sistema web de controle de entregas para transportadoras, feito em Python.
 Cadastra entregas, registra chegadas, classifica cada entrega automaticamente
 (no prazo, atrasada ou em rota) e mostra os indicadores num painel interativo.
 
-🔗 **Acesse o sistema:** _link em breve_
+🔗 **Acesse o sistema:** [rotacerta.streamlit.app](https://rotacerta.streamlit.app)
 
 ![Painel do RotaCerta](imagens/painel.png)
 
