@@ -1,5 +1,6 @@
 import os
-from banco import criar_tabelas
+
+from banco import criar_tabelas, ARQUIVO_BANCO
 from cadastros import (
     cadastrar_cliente, listar_clientes,
     cadastrar_caminhao, listar_caminhoes,
@@ -7,13 +8,7 @@ from cadastros import (
     registrar_chegada,
 )
 
-# 1. Começar do zero: apaga o banco antigo (se existir) e cria as tabelas vazias
-if os.path.exists("rotacerta.db"):
-    os.remove("rotacerta.db")
-criar_tabelas()
-
-# 2. Clientes: (nome, cidade, estado)
-clientes = [
+CLIENTES = [
     ("Mercado Bom Preço", "Rio de Janeiro", "RJ"),
     ("Supermercado Guanabara", "Rio de Janeiro", "RJ"),
     ("Drogaria Vida Leve", "Niterói", "RJ"),
@@ -21,21 +16,15 @@ clientes = [
     ("Casa do Construtor Minas", "Belo Horizonte", "MG"),
     ("Hortifruti Serra Verde", "Petrópolis", "RJ"),
 ]
-for nome, cidade, estado in clientes:
-    cadastrar_cliente(nome, cidade, estado)
 
-# 3. Caminhões: (placa, modelo, capacidade_kg)
-caminhoes = [
+CAMINHOES = [
     ("RIO1A23", "Volvo FH 540", 25000),
     ("KXP2B45", "Mercedes Atego 2430", 14000),
     ("LTN3C67", "VW Delivery 11.180", 8000),
     ("QRS4D89", "Iveco Daily 35-150", 3500),
 ]
-for placa, modelo, capacidade in caminhoes:
-    cadastrar_caminhao(placa, modelo, capacidade)
 
-# 4. Entregas: (cliente_id, caminhao_id, peso_kg, data_saida, prazo)
-entregas = [
+ENTREGAS = [
     (1, 1, 8000,  "2026-11-03", "2026-11-05"),
     (2, 2, 5000,  "2026-11-04", "2026-11-06"),
     (3, 4, 1200,  "2026-11-05", "2026-11-06"),
@@ -51,26 +40,48 @@ entregas = [
     (1, 1, 15000, "2026-11-19", "2026-11-21"),
     (3, 4, 2000,  "2026-11-15", "2026-11-17"),
 ]
-for cliente_id, caminhao_id, peso, saida, prazo in entregas:
-    cadastrar_entrega(cliente_id, caminhao_id, peso, saida, prazo)
 
-# 5. Chegadas: (entrega_id, data_entrega). As entregas 11 a 14 ainda estão em rota.
-chegadas = [
-    (1, "2026-11-05"),   # no prazo
-    (2, "2026-11-08"),   # atrasada
-    (3, "2026-11-06"),   # no prazo
-    (4, "2026-11-09"),   # adiantada
-    (5, "2026-11-13"),   # atrasada
-    (6, "2026-11-10"),   # no prazo
-    (7, "2026-11-12"),   # no prazo
-    (8, "2026-11-17"),   # atrasada
-    (9, "2026-11-14"),   # no prazo
-    (10, "2026-11-18"),  # atrasada
+CHEGADAS = [
+    (1, "2026-11-05"),
+    (2, "2026-11-08"),
+    (3, "2026-11-06"),
+    (4, "2026-11-09"),
+    (5, "2026-11-13"),
+    (6, "2026-11-10"),
+    (7, "2026-11-12"),
+    (8, "2026-11-17"),
+    (9, "2026-11-14"),
+    (10, "2026-11-18"),
 ]
-for entrega_id, data in chegadas:
-    registrar_chegada(entrega_id, data)
 
-# 6. Conferir
-print(listar_clientes())
-print(listar_caminhoes())
-print(listar_entregas())
+
+def popular_banco():
+    """Apaga o banco (se existir), recria as tabelas e cadastra os dados de exemplo."""
+    if os.path.exists(ARQUIVO_BANCO):
+        os.remove(ARQUIVO_BANCO)
+    criar_tabelas()
+
+    for nome, cidade, estado in CLIENTES:
+        cadastrar_cliente(nome, cidade, estado)
+
+    for placa, modelo, capacidade in CAMINHOES:
+        cadastrar_caminhao(placa, modelo, capacidade)
+
+    for cliente_id, caminhao_id, peso, saida, prazo in ENTREGAS:
+        cadastrar_entrega(cliente_id, caminhao_id, peso, saida, prazo)
+
+    for entrega_id, data in CHEGADAS:
+        registrar_chegada(entrega_id, data)
+
+
+def garantir_banco():
+    """Cria o banco com os dados de exemplo só se ele ainda não existir."""
+    if not os.path.exists(ARQUIVO_BANCO):
+        popular_banco()
+
+
+if __name__ == "__main__":
+    popular_banco()
+    print(listar_clientes())
+    print(listar_caminhoes())
+    print(listar_entregas())

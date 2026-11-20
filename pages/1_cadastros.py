@@ -9,6 +9,8 @@ from cadastros import (
 )
 
 st.set_page_config(page_title="Cadastros | RotaCerta", page_icon="🚚", layout="wide")
+from dados_exemplos import garantir_banco
+garantir_banco()
 st.title("📝 Cadastros")
 
 col_esq, col_dir = st.columns(2)

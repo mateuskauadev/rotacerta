@@ -7,6 +7,8 @@ import io
 from cadastros import listar_entregas_detalhado
 
 st.set_page_config(page_title="RotaCerta", page_icon="🚚", layout="wide")
+from dados_exemplos import garantir_banco
+garantir_banco()
 
 
 # ---------- Regras de status ----------
