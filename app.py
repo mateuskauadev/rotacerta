@@ -2,6 +2,7 @@ from datetime import date
 
 import pandas as pd
 import streamlit as st
+import io
 
 from cadastros import listar_entregas_detalhado
 
@@ -105,4 +106,22 @@ st.dataframe(
         "prazo": st.column_config.DateColumn("Prazo", format="DD/MM/YYYY"),
         "data_entrega": st.column_config.DateColumn("Entregue em", format="DD/MM/YYYY"),
     },
+)
+# ---------- Exportar ----------
+
+exportar = filtradas[["id", "status", "cliente", "caminhao", "peso_kg",
+                      "data_saida", "prazo", "data_entrega"]].rename(columns={
+    "id": "Nº", "status": "Status", "cliente": "Cliente", "caminhao": "Caminhão",
+    "peso_kg": "Peso (kg)", "data_saida": "Saída", "prazo": "Prazo",
+    "data_entrega": "Entregue em",
+})
+
+arquivo = io.BytesIO()
+exportar.to_excel(arquivo, index=False, sheet_name="Entregas")
+
+st.download_button(
+    "📥 Exportar para Excel",
+    data=arquivo.getvalue(),
+    file_name=f"rotacerta_entregas_{date.today().isoformat()}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 )
