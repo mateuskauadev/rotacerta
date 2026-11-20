@@ -69,6 +69,19 @@ col2.metric("No prazo", no_prazo)
 col3.metric("Atrasadas", atrasadas)
 col4.metric("Em rota", em_rota)
 
+# ---------- Gráficos ----------
+
+graf1, graf2 = st.columns(2)
+
+por_status = filtradas["status"].value_counts()
+graf1.subheader("Entregas por status")
+graf1.bar_chart(por_status)
+
+so_atrasadas = filtradas[filtradas["status"].str.contains("Atrasada")]
+por_cliente = so_atrasadas["cliente"].value_counts()
+graf2.subheader("Atrasos por cliente")
+graf2.bar_chart(por_cliente)
+
 # ---------- Tabela ----------
 
 st.subheader("Entregas")
