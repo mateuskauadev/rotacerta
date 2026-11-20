@@ -41,10 +41,27 @@ st.write("Sistema de controle de entregas")
 entregas = listar_entregas_detalhado()
 entregas["status"] = entregas.apply(definir_status, axis=1)
 
-total = len(entregas)
-no_prazo = entregas["status"].str.contains("No prazo").sum()
-atrasadas = (entregas["status"] == "🔴 Atrasada").sum()
-em_rota = entregas["status"].str.contains("Em rota").sum()
+# ---------- Filtros (menu lateral) ----------
+
+st.sidebar.header("Filtros")
+filtro_status = st.sidebar.multiselect("Status", sorted(entregas["status"].unique()))
+filtro_cliente = st.sidebar.multiselect("Cliente", sorted(entregas["cliente"].unique()))
+filtro_caminhao = st.sidebar.multiselect("Caminhão", sorted(entregas["caminhao"].unique()))
+
+filtradas = entregas
+if filtro_status:
+    filtradas = filtradas[filtradas["status"].isin(filtro_status)]
+if filtro_cliente:
+    filtradas = filtradas[filtradas["cliente"].isin(filtro_cliente)]
+if filtro_caminhao:
+    filtradas = filtradas[filtradas["caminhao"].isin(filtro_caminhao)]
+
+# ---------- Indicadores ----------
+
+total = len(filtradas)
+no_prazo = filtradas["status"].str.contains("No prazo").sum()
+atrasadas = (filtradas["status"] == "🔴 Atrasada").sum()
+em_rota = filtradas["status"].str.contains("Em rota").sum()
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total de entregas", total)
@@ -52,5 +69,27 @@ col2.metric("No prazo", no_prazo)
 col3.metric("Atrasadas", atrasadas)
 col4.metric("Em rota", em_rota)
 
+# ---------- Tabela ----------
+
 st.subheader("Entregas")
-st.dataframe(entregas, hide_index=True)
+
+tabela = filtradas.copy()
+for coluna in ["data_saida", "prazo", "data_entrega"]:
+    tabela[coluna] = pd.to_datetime(tabela[coluna])
+
+st.dataframe(
+    tabela,
+    hide_index=True,
+    column_order=["id", "status", "cliente", "caminhao", "peso_kg",
+                  "data_saida", "prazo", "data_entrega"],
+    column_config={
+        "id": st.column_config.NumberColumn("Nº", format="%d"),
+        "status": "Status",
+        "cliente": "Cliente",
+        "caminhao": "Caminhão",
+        "peso_kg": st.column_config.NumberColumn("Peso", format="%d kg"),
+        "data_saida": st.column_config.DateColumn("Saída", format="DD/MM/YYYY"),
+        "prazo": st.column_config.DateColumn("Prazo", format="DD/MM/YYYY"),
+        "data_entrega": st.column_config.DateColumn("Entregue em", format="DD/MM/YYYY"),
+    },
+)
